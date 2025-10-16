@@ -1,0 +1,8 @@
+credentials.json
+token.json
+GEMINI_API_KEY
+*.m4a
+*.md
+!README.md
+__pycache__
+venv
