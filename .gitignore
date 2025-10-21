@@ -6,3 +6,4 @@ GEMINI_API_KEY
 !README.md
 __pycache__
 venv
+cron.log

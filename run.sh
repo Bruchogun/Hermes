@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Navigate to project directory
-cd ~/hermes
+cd ~/Hermes
 
 # Activate virtual environment
-source venv/bin/activate
+source .venv/bin/activate
 
 # Run the main script
 python main.py
