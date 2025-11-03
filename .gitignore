@@ -7,3 +7,4 @@ GEMINI_API_KEY
 __pycache__
 venv
 cron.log
+run.sh

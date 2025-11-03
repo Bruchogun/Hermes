@@ -31,7 +31,7 @@ def get_credentials():
         try:
             creds = Credentials.from_authorized_user_file("token.json", SCOPES)
         except Exception as e:
-            print(f"⚠️ Error loading token.json: {e}. Re-authenticating...")
+            print(f"⚠️ Error loading token.json: {e}")
             creds = None
     
     # Refresh or re-authenticate if needed
@@ -40,20 +40,36 @@ def get_credentials():
             try:
                 creds.refresh(Request())
                 print("✅ Token refreshed successfully")
+                # Save refreshed credentials
+                with open("token.json", "w") as token:
+                    token.write(creds.to_json())
             except Exception as e:
-                print(f"⚠️ Token refresh failed: {e}. Re-authenticating...")
-                creds = None
-        
-        if not creds:
-            if not os.path.exists("credentials.json"):
-                print("ERROR: credentials.json not found. Cannot authenticate.")
+                print(f"❌ CRITICAL: Token refresh failed: {e}")
+                print(f"❌ Please run the script manually to re-authenticate:")
+                print(f"   python3 {os.path.abspath(__file__)}")
+                print(f"❌ Token file may be corrupted. Delete token.json and re-authenticate.")
                 exit(1)
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
-            creds = flow.run_local_server(port=0)
-        
-        # Save credentials
-        with open("token.json", "w") as token:
-            token.write(creds.to_json())
+        else:
+            # No valid credentials and can't refresh - need manual authentication
+            if not os.path.exists("credentials.json"):
+                print("❌ ERROR: credentials.json not found. Cannot authenticate.")
+                exit(1)
+            
+            print("🔐 No valid token found. Starting authentication flow...")
+            print("⚠️  This requires a browser. Run this manually, not via cron.")
+            
+            try:
+                flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+                creds = flow.run_local_server(port=0)
+                
+                # Save credentials
+                with open("token.json", "w") as token:
+                    token.write(creds.to_json())
+                print("✅ Authentication successful! Token saved.")
+            except Exception as e:
+                print(f"❌ Authentication failed: {e}")
+                print(f"❌ Make sure you're running this on a system with a browser.")
+                exit(1)
     
     return creds
 
